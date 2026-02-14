@@ -21,12 +21,24 @@ th {
 
 tr {
     background-color: #f7eeee;
+    align-items: flex-start; /* prevents vertical stretching */
+    height: 50px;           /* fixed row height */
+
 }
 
 a:link, a:visited {
     color: #861b1b;
 }
 
+#preview {
+    border: 2px solid #861b1b;
+}
+
+.image-area {
+    width: 300px;
+    height: 100%;
+    overflow-y: auto;
+}  
 .nav-button {
     display: inline-block;
     align-items: center;
@@ -47,6 +59,14 @@ a:link, a:visited {
     justify-content: center;
     align-content: center;
     width: 80%;
+    height: 50px;
+}
+
+.container2 {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+
 }
 
 .box-container {

@@ -26,6 +26,21 @@ th {
     border-radius: 5px;
 }
 
+.nav-button {
+    display: inline-block;
+    align-items: center;
+    justify-self: center;
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 1.2rem;
+    color: #fff;
+    background-color: pink;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
 .box-container {
     display: flex;
     justify-content: center;
@@ -37,7 +52,6 @@ th {
 }
 
 .box {
-    border: 2px solid #000;
     padding: 20px;
     width: 100px;
     text-align: center;

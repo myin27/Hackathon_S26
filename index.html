@@ -1,4 +1,4 @@
-<!-- index.hmtl -->
+<!-- index.html -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -8,5 +8,38 @@
     <title>Title (TBD)</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
+<body>
+    <div class="container">
+        <h1 class="title">Some Title</h1>
+        
+        <div class="box-container" style="display: flex; justify-content: center; gap: 20px;">
+            <div class="box">Uploads</div>
+            <div class="box">Recipes</div>
+            <div class="box">Streak</div>
+        </div>
+        
+        <div class="upload-section" style="display: flex; justify-content: center; gap: 20px;">
+            <p>Upload Your Receipt Here!</p>
+            <input type="file" id="fileUpload">
+        </div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th >Item</th>
+                    <th>Cost</th>
+                    <th style="width: 200px">Perishable?</th>
+                    <th style="width: 100px">Delete Item</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be dynamically added here -->
+                <tr>
+                    <td>Milk</td>
+                    <td>$3.00</td>
+                    <td>Yes</td>
+            </tbody>
+        </table>
+    </div>
+</body>
 </html>

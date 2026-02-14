@@ -5,12 +5,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title (TBD)</title>
+    <title>Recipes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="container">
+        <h1 class="title">Some Title</h1>
+        
+        <div class="box-container" style="display: flex; justify-content: center; gap: 20px;">
+            <div class="box">
+                <button class="nav-button" onclick="window.location.href='index.html'">Pantry</button>
+            </div>
+            <div class="box">
+                <button class="nav-button" onclick="window.location.href='recipes.html'">Recipes</button>
+            </div>
+            <div class="box">Streak</div>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ingredients Required:</th>
+                    <th>Recipe Link</th>
+                    <th style="width: 200px">Recipe Made?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be dynamically added here -->
+                <tr>
+                    <td>Milk, Eggs, Cheese</td>
+                    <td>
+                        <a href="google.com">Recipe Name</a>
+                    </td>
+                    <td>
+                        <input type="checkbox" id="recipeMade1" name="recipeMade1">
+                    </td>
+            </tbody>
+        </table>
+    </div>
 
 
-    
 </body>

@@ -5,13 +5,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title (TBD)</title>
+    <title>Scan2Serve</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="container">
-        <h1 class="title">Some Title</h1>
+        <h1 class="title">Scan2Serve</h1>
         
         <div class="box-container" style="display: flex; justify-content: center; gap: 20px;">
             <div class="box">
@@ -20,7 +20,7 @@
             <div class="box">
                 <button class="nav-button" onclick="window.location.href='recipes.html'">Recipes</button>
             </div>
-            <div class="box">Streak</div>
+            <!-- <div class="box">Streak</div> -->
         </div>
         
         <div class="upload-section" style="display: flex; justify-content: center; gap: 20px;">
@@ -41,23 +41,27 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Item</th>
-                    <th>Cost</th>
-                    <th style="width: 200px">Perishable?</th>
+                    <th>Item Name</th>
+                    <th style="width: 150px">Price</th>
+                    <th style="width: 150px">Confidence Level</th>
+                    <th style="width: 150px">Perishable?</th>
                     <th style="width: 100px">Delete Item</th>
                 </tr>
             </thead>
+
             <tbody>
                 <!-- Rows will be dynamically added here -->
                 <tr>
-                    <td>Milk</td>
+                    <td>Marinated Chicken Breasts</td>
                     <td>$3.00</td>
+                    <td>0.7</td>
                     <td>Yes</td>
                     <td><button class="delete-button">Delete</button></td>
                 </tr>
                 <tr>
                     <td>Milk</td>
                     <td>$3.00</td>
+                    <td>0.7</td>
                     <td>Yes</td>
                     <td><button class="delete-button">Delete</button></td>
                 </tr>

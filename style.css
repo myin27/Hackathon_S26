@@ -12,7 +12,9 @@ h1 {
     font-size: 5rem;
     margin-bottom: 20px;
     padding: 10px;
-    font-family: "Lucida Console", monospace;}
+    font-family: "Garamond", serif;
+    color: #ae0d0d;
+}
 
 th {
     background-color: rgb(251, 157, 173);

@@ -10,6 +10,10 @@ export function loadPantry() {
   }
 }
 
+export function savePantry(pantryArray) {
+  localStorage.setItem(PANTRY_KEY, JSON.stringify(pantryArray || []));
+}
+
 export function savePantryFromRows(rows) {
   const existing = loadPantry();
 

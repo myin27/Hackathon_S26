@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scan2Serve — Recipes</title>
+  <title>Scan2Serve • Recipes</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -12,7 +12,7 @@
     <header class="topbar">
       <div class="brand">
         <h1 class="title">Scan2Serve</h1>
-        <p class="subtitle">Turn your pantry into recipe ideas</p>
+        <p class="subtitle">Use your pantry → chat for recipe ideas</p>
       </div>
 
       <nav class="nav">
@@ -21,78 +21,64 @@
       </nav>
     </header>
 
-    <main class="grid">
-      <!-- LEFT: Pantry summary (from localStorage) -->
+    <main class="grid recipes-grid">
+      <!-- LEFT: Pantry -->
       <section class="card table-card">
         <div class="table-head">
           <div>
             <div class="card-title">Saved pantry</div>
-            <div class="hint">Loaded from local storage. Add/edit items here too.</div>
+            <div class="hint">Pulled from localStorage. You can edit here.</div>
           </div>
-        
-          <div class="pill" id="pantryCount">0 items</div>
+
+          <div class="btn-row">
+            <button class="btn" id="clearPantryBtn">Clear</button>
+          </div>
         </div>
 
-        <div class="add-row" style="display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0 12px;">
-          <input id="newItemName" class="cell-input" style="max-width: 320px;" placeholder="Add an item (e.g., Greek yogurt)" />
-          <select id="newItemPerishable" style="max-width: 160px;">
-            <option value="Yes">Perishable</option>
-            <option value="No">Non-perishable</option>
+        <div class="add-row">
+          <input id="addName" class="cell-input" placeholder="Add item name (e.g., eggs)" />
+          <select id="addPerishable" class="cell-input">
+            <option value="Yes">Perishable: Yes</option>
+            <option value="No">Perishable: No</option>
           </select>
-          <button class="btn primary" id="addItemBtn" type="button">Add</button>
+          <button class="btn primary" id="addItemBtn">Add</button>
         </div>
-
 
         <div class="table-wrap">
-          <table class="data-table" id="pantryTable">
+          <table class="data-table">
             <thead>
               <tr>
                 <th>Item</th>
-                <th style="width: 140px">Perishable</th>
-                <th style="width: 200px">Actions</th>
+                <th style="width:140px;">Perishable</th>
+                <th style="width:190px;">Actions</th>
               </tr>
-
             </thead>
-            <tbody>
-              <!-- filled by recipes.js -->
-            </tbody>
+            <tbody id="pantryTableBody"><!-- dynamic --></tbody>
           </table>
-        </div>
-
-        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn danger" id="clearPantryBtn">Clear pantry</button>
-          <button class="btn" id="exportPantryBtn">Export JSON</button>
         </div>
       </section>
 
-      <!-- RIGHT: Chat mock (layout only for now) -->
-      <section class="card preview-card">
-        <div class="card-title">Recipe chat (coming next)</div>
-        <div class="hint" style="margin-bottom:10px;">
-          We’ll plug Bedrock in here last. For now it’s just UI.
-        </div>
+      <!-- RIGHT: Phone chat -->
+      <section class="card chat-card">
+        <div class="card-title">Recipe chat</div>
+        <div class="hint">Ask for ideas using what you have.</div>
 
-        <div class="chat">
-          <div class="chat-bubble bot">
-            Hi! What would you like to make today?
-          </div>
-          <div class="chat-bubble user">
-            Something with yogurt and granola.
-          </div>
-          <div class="chat-bubble bot">
-            Cool — any other constraints (high protein, vegetarian, etc.)?
+        <div class="phone">
+          <div class="chat-window" id="chatWindow"></div>
+
+          <div class="chat-input-row">
+            <input id="chatText" class="chat-input" placeholder="What can I make with this?" />
+            <button id="chatSend" class="btn primary">Send</button>
           </div>
         </div>
 
-        <div class="chat-input">
-          <input id="chatText" type="text" placeholder="Type a message…" />
-          <button class="btn primary" id="chatSend">Send</button>
-        </div>
+        <div class="card-title" style="margin-top:14px;">Suggested recipes</div>
+        <div id="recipeResults" class="recipe-results"></div>
       </section>
     </main>
   </div>
 
-  <!-- IMPORTANT: module script so we can import pantryStore -->
+  <!-- IMPORTANT: module so imports work -->
   <script type="module" src="recipes.js"></script>
 </body>
 </html>

@@ -1,158 +1,218 @@
-import {
-  loadPantry,
-  clearPantry,
-  setPantry,
-  upsertPantryItem,
-  deletePantryItemByName
-} from "./pantryStore.js";
+// recipes.js (module)
+import { loadPantry, savePantry, clearPantry } from "./pantryStore.js";
 
-const tbody = document.querySelector("#pantryTable tbody");
-const pantryCount = document.getElementById("pantryCount");
-const clearBtn = document.getElementById("clearPantryBtn");
-const exportBtn = document.getElementById("exportPantryBtn");
+// ✅ PUT YOUR CHAT LAMBDA URL HERE
+const CHAT_LAMBDA_URL = "https://ycastrsgk5wkyfdhhq4quyle440ukazw.lambda-url.us-east-1.on.aws/";
+const API_KEY = "hackz_26";
 
-const newNameEl = document.getElementById("newItemName");
-const newPerishEl = document.getElementById("newItemPerishable");
-const addBtn = document.getElementById("addItemBtn");
+// DOM
+const pantryBody = document.getElementById("pantryTableBody");
+const clearPantryBtn = document.getElementById("clearPantryBtn");
+const addName = document.getElementById("addName");
+const addPerishable = document.getElementById("addPerishable");
+const addItemBtn = document.getElementById("addItemBtn");
 
-let items = []; // in-memory copy for this page
-let editingKey = null; // normalized name currently being edited
+const chatWindow = document.getElementById("chatWindow");
+const chatText = document.getElementById("chatText");
+const chatSend = document.getElementById("chatSend");
+const recipeResults = document.getElementById("recipeResults");
 
-function normalizeName(name) {
-  return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
-}
+// state
+let pantry = loadPantry();              // [{itemName, perishable, ...}]
+let chat = [];                          // [{role:"user"|"assistant", content:"..."}]
 
-function render() {
-  items = loadPantry();
-  pantryCount.textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
-  tbody.innerHTML = "";
+// ---------- Pantry UI ----------
+function renderPantry() {
+  pantryBody.innerHTML = "";
 
-  if (!items.length) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="3" style="padding:16px;opacity:.7;">No pantry items yet.</td>`;
-    tbody.appendChild(tr);
-    return;
-  }
-
-  items.forEach((it) => {
-    const name = (it.itemName || "").trim();
-    const perish = it.perishable === "Yes" ? "Yes" : "No";
-    const key = normalizeName(name);
-
+  pantry.forEach((it, idx) => {
     const tr = document.createElement("tr");
 
-    if (editingKey !== key) {
-      tr.innerHTML = `
-        <td>${escapeHtml(name)}</td>
-        <td><span class="pill ${perish === "Yes" ? "yes" : "no"}">${perish}</span></td>
-        <td>
-          <div class="btn-row" style="justify-content:flex-start;">
-            <button class="btn primary edit-item" data-key="${key}">Edit</button>
-            <button class="btn danger delete-item" data-key="${key}">Delete</button>
-          </div>
-        </td>
-      `;
-    } else {
-      tr.innerHTML = `
-        <td>
-          <input class="cell-input" data-field="itemName" data-key="${key}" value="${escapeAttr(name)}">
-        </td>
-        <td>
-          <select data-field="perishable" data-key="${key}">
-            <option value="Yes" ${perish === "Yes" ? "selected" : ""}>Perishable</option>
-            <option value="No" ${perish === "No" ? "selected" : ""}>Non-perishable</option>
-          </select>
-        </td>
-        <td>
-          <div class="btn-row" style="justify-content:flex-start;">
-            <button class="btn primary save-item" data-key="${key}">Save</button>
-            <button class="btn cancel-item" data-key="${key}">Cancel</button>
-          </div>
-        </td>
-      `;
-    }
+    const name = it.itemName ?? "";
+    const perish = it.perishable === true ? "Yes" : it.perishable === false ? "No" : (it.perishable || "No");
 
-    tbody.appendChild(tr);
+    tr.innerHTML = `
+      <td>
+        <input class="cell-input" data-field="itemName" data-idx="${idx}" value="${escapeAttr(name)}" />
+      </td>
+      <td>
+        <select class="cell-input" data-field="perishable" data-idx="${idx}">
+          <option value="Yes" ${perish === "Yes" ? "selected" : ""}>Yes</option>
+          <option value="No" ${perish === "No" ? "selected" : ""}>No</option>
+        </select>
+      </td>
+      <td>
+        <div class="btn-row">
+          <button class="btn primary" data-action="save" data-idx="${idx}">Save</button>
+          <button class="btn danger" data-action="delete" data-idx="${idx}">Delete</button>
+        </div>
+      </td>
+    `;
+
+    pantryBody.appendChild(tr);
   });
 }
 
-addBtn.addEventListener("click", () => {
-  const name = String(newNameEl.value || "").trim();
-  const perishable = newPerishEl.value === "Yes" ? "Yes" : "No";
+function persistPantry() {
+  savePantry(pantry);
+}
+
+// Add item
+addItemBtn.addEventListener("click", () => {
+  const name = String(addName.value || "").trim();
   if (!name) return;
 
-  upsertPantryItem({ itemName: name, perishable });
-  newNameEl.value = "";
-  newPerishEl.value = "Yes";
-  render();
+  pantry.unshift({
+    itemName: name,
+    perishable: addPerishable.value, // "Yes"|"No"
+    updatedAt: Date.now(),
+  });
+
+  addName.value = "";
+  persistPantry();
+  renderPantry();
 });
 
+clearPantryBtn.addEventListener("click", () => {
+  pantry = [];
+  clearPantry();
+  renderPantry();
+});
+
+// Save/Delete inside table (event delegation)
 document.addEventListener("click", (e) => {
-  const el = e.target;
+  const btn = e.target;
+  const action = btn?.dataset?.action;
+  if (!action) return;
 
-  const key = el?.dataset?.key;
-  if (!key) return;
+  const idx = Number(btn.dataset.idx);
+  if (Number.isNaN(idx)) return;
 
-  if (el.classList.contains("edit-item")) {
-    editingKey = key;
-    render();
+  if (action === "delete") {
+    pantry.splice(idx, 1);
+    persistPantry();
+    renderPantry();
     return;
   }
 
-  if (el.classList.contains("cancel-item")) {
-    editingKey = null;
-    render();
-    return;
-  }
+  if (action === "save") {
+    const nameEl = document.querySelector(`[data-field="itemName"][data-idx="${idx}"]`);
+    const perishEl = document.querySelector(`[data-field="perishable"][data-idx="${idx}"]`);
 
-  if (el.classList.contains("delete-item")) {
-    const item = items.find(it => normalizeName(it.itemName) === key);
-    if (!item) return;
-    deletePantryItemByName(item.itemName);
-    if (editingKey === key) editingKey = null;
-    render();
-    return;
-  }
+    const newName = String(nameEl?.value || "").trim();
+    const newPerish = perishEl?.value === "Yes" ? "Yes" : "No";
 
-  if (el.classList.contains("save-item")) {
-    const nameInput = document.querySelector(`input[data-key="${CSS.escape(key)}"][data-field="itemName"]`);
-    const perSel = document.querySelector(`select[data-key="${CSS.escape(key)}"][data-field="perishable"]`);
-
-    const newName = String(nameInput?.value || "").trim();
-    const newPerish = perSel?.value === "Yes" ? "Yes" : "No";
     if (!newName) return;
 
-    // If user renamed the item, delete old key then upsert new name
-    const oldItem = items.find(it => normalizeName(it.itemName) === key);
-    if (oldItem && normalizeName(oldItem.itemName) !== normalizeName(newName)) {
-      deletePantryItemByName(oldItem.itemName);
-    }
+    pantry[idx] = {
+      ...pantry[idx],
+      itemName: newName,
+      perishable: newPerish,
+      updatedAt: Date.now(),
+    };
 
-    upsertPantryItem({ itemName: newName, perishable: newPerish });
-    editingKey = null;
-    render();
+    persistPantry();
+    renderPantry();
   }
 });
 
-clearBtn.addEventListener("click", () => {
-  clearPantry();
-  editingKey = null;
-  render();
+// ---------- Chat UI ----------
+function renderChat() {
+  chatWindow.innerHTML = "";
+  chat.forEach(m => {
+    const bubble = document.createElement("div");
+    bubble.className = `bubble ${m.role === "user" ? "user" : "assistant"}`;
+    bubble.textContent = m.content;
+    chatWindow.appendChild(bubble);
+  });
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+function renderRecipes(recipes) {
+  recipeResults.innerHTML = "";
+  if (!Array.isArray(recipes) || recipes.length === 0) {
+    recipeResults.innerHTML = `<div class="hint">No recipes returned yet.</div>`;
+    return;
+  }
+
+  recipes.forEach(r => {
+    const div = document.createElement("div");
+    div.className = "recipe-card";
+    const title = r.title || "Recipe";
+    const why = r.why_fits || "";
+    const missing = Array.isArray(r.missing) ? r.missing : [];
+    const url = r.search_url || "";
+
+    div.innerHTML = `
+      <div class="recipe-title">${escapeHtml(title)}</div>
+      <div class="hint">${escapeHtml(why)}</div>
+      ${missing.length ? `<div class="missing"><b>Missing:</b> ${missing.map(escapeHtml).join(", ")}</div>` : ""}
+      ${url ? `<a class="recipe-link" target="_blank" rel="noreferrer" href="${escapeAttr(url)}">Open search</a>` : ""}
+    `;
+    recipeResults.appendChild(div);
+  });
+}
+
+async function sendChat() {
+  const text = String(chatText.value || "").trim();
+  if (!text) return;
+
+  chatText.value = "";
+  chat.push({ role: "user", content: text });
+  renderChat();
+
+  chatSend.disabled = true;
+  chatSend.textContent = "…";
+
+  try {
+    // Always use the *latest* pantry from localStorage, not stale memory
+    pantry = loadPantry();
+
+    const payload = {
+      messages: chat.slice(-20),  // keep short
+      pantry: pantry.slice(0, 200),
+      constraints: {},           // optional later
+    };
+
+    const res = await fetch(CHAT_LAMBDA_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data?.message || `Request failed (${res.status})`);
+
+    const result = data.result || {};
+    const assistantMsg = result.assistant_message || "Got it.";
+    chat.push({ role: "assistant", content: assistantMsg });
+    renderChat();
+
+    renderRecipes(result.recipes);
+
+  } catch (err) {
+    chat.push({ role: "assistant", content: `Error: ${err.message}` });
+    renderChat();
+  } finally {
+    chatSend.disabled = false;
+    chatSend.textContent = "Send";
+  }
+}
+
+chatSend.addEventListener("click", sendChat);
+chatText.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendChat();
 });
 
-exportBtn.addEventListener("click", () => {
-  const pantry = loadPantry();
-  const blob = new Blob([JSON.stringify(pantry, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "scan2serve_pantry.json";
-  a.click();
-
-  URL.revokeObjectURL(url);
-});
-
+// init
+renderPantry();
+renderChat();
+renderRecipes([]);
+  
+// ---------- helpers ----------
 function escapeHtml(s) {
   return String(s ?? "")
     .replaceAll("&", "&amp;")
@@ -162,5 +222,3 @@ function escapeHtml(s) {
 function escapeAttr(s) {
   return escapeHtml(s).replaceAll('"', "&quot;");
 }
-
-render();

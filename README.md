@@ -19,4 +19,4 @@ The user can have as many exchanges as they please, and once they are satisfied 
 the AI will return links to recipes the user can use to begin their cooking journey. 
 There is also the ability to edit the ingredients available and save recipes the chatbot mentions for later use.
 
-Give it a try at [Insert Link Here]().
+Give it a try at [sscan2serve.netlify.app](sscan2serve.netlify.app).

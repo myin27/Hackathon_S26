@@ -1,70 +1,83 @@
-<!-- index.html -->
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Title (TBD)</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scan2Serve</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="icon" type="image/png" href="logo.png" />
+  </head>
 
-<body>
-    <div class="container">
-        <h1 class="title">Some Title</h1>
-        
-        <div class="box-container" style="display: flex; justify-content: center; gap: 20px;">
-            <div class="box">
-                <button class="nav-button" onclick="window.location.href='index.html'">Pantry</button>
-            </div>
-            <div class="box">
-                <button class="nav-button" onclick="window.location.href='recipes.html'">Recipes</button>
-            </div>
-            <div class="box">Streak</div>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+            <h1 class="title">
+                Scan2Serve
+                <img src="logo.png" alt="Scan2Serve logo" class="logo" style="width: 75px; vertical-align: bottom;"/>
+            </h1>
+          <p class="subtitle">Scan a receipt → build your pantry → plan recipes</p>
         </div>
-        
-        <div class="upload-section" style="display: flex; justify-content: center; gap: 20px;">
-            <p>Upload Your Receipt Here!</p>
-            <input type="file" id="fileUpload" accept="image/*">
 
-            <br></br>
+        <nav class="nav">
+          <a class="nav-button is-active" href="./index.html">Upload Receipt</a>
+          <a class="nav-button" href="./recipes.html">Recipes</a>
+        </nav>
+      </header>
 
+      <section class="card upload-card">
+        <div class="upload-row">
+          <div>
+            <div class="label">Upload your receipt</div>
+            <div class="hint">JPG/PNG/WebP • Keep it zoomed & readable</div>
+          </div>
+
+          <label class="file-btn">
+            Choose file
+            <input type="file" id="fileUpload" accept="image/*" />
+          </label>
         </div>
-        
+      </section>
 
-    <div style="display: flex; justify-content: center; gap: 20px;">
+      <details class="card debug-card">
+        <summary>Debug JSON (click to expand)</summary>
+        <pre id="result"></pre>
+      </details>
 
-        <img id="preview" width="300" style="display: none;">
+      <main class="grid">
+        <section class="card preview-card">
+          <div class="card-title">Receipt preview</div>
+          <div class="preview-wrap">
+            <img id="preview" alt="Receipt preview" style="display:none;" />
+          </div>
+        </section>
 
-        <table class="data-table">
-            <thead>
+        <section class="card table-card">
+          <div class="table-head">
+            <div>
+              <div class="card-title">Pantry items</div>
+              <div class="hint">Edit items if the AI guessed wrong.</div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
                 <tr>
-                    <th >Item</th>
-                    <th>Cost</th>
-                    <th style="width: 200px">Perishable?</th>
-                    <th style="width: 100px">Delete Item</th>
+                  <th>Item Name</th>
+                  <th class="num" style="width: 140px">Price</th>
+                  <th style="width: 170px">Confidence</th>
+                  <th style="width: 140px">Perishable</th>
+                  <th style="width: 160px">Actions</th>
                 </tr>
-            </thead>
-            <tbody>
-                <!-- Rows will be dynamically added here -->
-                <tr>
-                    <td>Milk</td>
-                    <td>$3.00</td>
-                    <td>Yes</td>
-                    <td><button class="delete-button">Delete</button></td>
-                </tr>
-                <tr>
-                    <td>Milk</td>
-                    <td>$3.00</td>
-                    <td>Yes</td>
-                    <td><button class="delete-button">Delete</button></td>
-                </tr>
-            </tbody>
-        </table>
+              </thead>
+              <tbody><!-- dynamic --></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
 
-    <script src="script.js"></script>
-
-</body>
-
+    <script type="module" src="script.js"></script>
+  </body>
 </html>

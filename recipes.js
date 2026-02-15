@@ -142,7 +142,7 @@ function renderChat() {
 function renderRecipes(recipes) {
   recipeResults.innerHTML = "";
   if (!Array.isArray(recipes) || recipes.length === 0) {
-    recipeResults.innerHTML = `<div class="hint">No recipes returned yet.</div>`;
+    recipeResults.innerHTML = `<div class="hint" style="padding-left: 20px; padding-bottom: 10px;">No recipes returned yet.</div>`;
     return;
   }
 
